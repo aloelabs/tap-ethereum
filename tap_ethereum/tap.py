@@ -15,7 +15,7 @@ from singer_sdk import typing as th  # JSON schema typing helpers
 from tap_ethereum.streams import (
     EventStream,
     BlocksStream,
-    GettersStream,
+    GetterStream,
 )
 from tap_ethereum.typing import AddressType
 
@@ -43,7 +43,7 @@ class TapEthereum(Tap):
                         "name",
                         th.StringType,
                         description="Name of the smart contract",
-                        required=True
+                        required=True,
                     ),
                     th.Property(
                         "addresses",
@@ -91,7 +91,6 @@ class TapEthereum(Tap):
     def etherscan(self) -> Etherscan:
         return Etherscan(self.config.get("etherscan_api_key"))
 
-    @property
     def load_contract(self, contract_config: Mapping[str, Any]) -> Contract:
         address = contract_config.get('address')
         if contract_config.get('abi'):
@@ -112,10 +111,9 @@ class TapEthereum(Tap):
 
         streams: List[Stream] = []
 
-        streams.append()
-
         for contract_config in self.config.get('contracts'):
             contract = self.load_contract(contract_config)
+            contract_name = contract_config.get('name')
 
             events_abi = contract.events._events
 
@@ -128,23 +126,31 @@ class TapEthereum(Tap):
                     tap=self,
                     abi=event_abi,
                     web3=self.web3,
-                    address=contract.address,
+                    contract_name=contract_name,
                 )
                 streams.append(stream)
 
+            getters_abi = map(
+                lambda contract_function: contract_function.abi, contract.all_functions())
             getters_abi = filter(lambda function_abi: function_abi.get(
-                'stateMutability') == 'view', contract.all_functions())
+                'stateMutability') == 'view', getters_abi)
 
             if contract_config.get('address'):
+                # TODO: support getters with inputs
+                getters_abi = filter(lambda getter_abi: len(getter_abi.get(
+                    'inputs')) == 0, getters_abi)
                 if contract_config.get('getters'):
                     getters_abi = filter(lambda getter_abi: getter_abi.get(
                         'name') in contract_config.get('getters'), getters_abi)
 
-                stream = GettersStream(
-                    tap=self,
-                    abi=getters_abi,
-                    contract=contract,
-                    address=contract.address,
-                )
+                for getter_abi in getters_abi:
+                    stream = GetterStream(
+                        tap=self,
+                        abi=getter_abi,
+                        address=contract.address,
+                        web3=self.web3,
+                        contract_name=contract_name,
+                    )
+                    streams.append(stream)
 
         return streams
