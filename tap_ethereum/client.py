@@ -18,52 +18,13 @@ import os
 # declare a away to store contracts somehow
 
 
-class ContractWrapper:
-    contract: Contract = None
-
-    def __init__(self, contract: Contract, name: str = None) -> None:
-        self.contract = contract
-        self.name = name
-
-    def getters(self) -> List['ContractFunction']:
-        for f in self.contract.all_functions():
-            print(f.abi)
-
-
 class EthereumStream(Stream):
     """Stream class for Ethereum streams."""
 
-    def __init__(self, tap: Tap):
-        super().__init__(tap)
-        # TODO: support other providers
-        self.web3 = Web3(Web3.WebsocketProvider(self.config.get("rpc_endpoint_uri")))
+    def __init__(self, *args, **kwargs) -> None:
+        self.web3 = kwargs.pop("web3")
 
-        self.etherscan = None
-        if self.config.get("etherscan_api_key"):
-            self.etherscan = Etherscan(self.config.get("etherscan_api_key"))
-
-        self.contracts = []
-        for contract_config in self.config.get('contracts'):
-            address = contract_config.get('address')
-            if contract_config.get('abi'):
-                abi_config = contract_config.get('abi')
-                abi_name = abi_config.get('name')
-                if abi_config.get('file'):
-                    with open(abi_config.get('file'), 'r') as abi_file:
-                        abi_json = abi_file.read()
-            elif self.etherscan and address:
-                abi_json = self.etherscan.get_contract_abi(address=address)
-            else:
-                raise Exception(f"Missing ABI for contract {contract_config}")
-
-            abi = json.loads(abi_json)
-
-            contract = self.web3.eth.contract(abi=abi, address=address)
-            getters = filter(lambda f: f.abi.get('stateMutability')
-                             == 'view', contract.all_functions())
-            events = contract.events.abi
-            # focus on this
-    # def _parse_contract_config(config:)
+        super().__init__(*args, **kwargs)
 
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects.
