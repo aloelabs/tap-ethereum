@@ -49,17 +49,20 @@ class EventStream(EthereumStream):
 
         properties.append(th.Property('address', AddressType, required=True))
 
-        for input_abi in self.abi.get('inputs'):
-            properties.append(th.Property(input_abi.get(
-                'name'), get_jsonschema_type(input_abi.get('type')), required=True))
+        inputs_properties: List[th.Property] = []
+        for index, input_abi in enumerate(self.abi.get('inputs')):
+            input_name = input_abi.get('name') or index
+            inputs_properties.append(th.Property(input_name, get_jsonschema_type(
+                input_abi.get('type')), required=True))
+        inputs_type = th.ObjectType(*inputs_properties)
+
+        # # TODO: clean up code
+        properties.append(th.Property('inputs', inputs_type, required=True))
 
         return th.PropertiesList(*properties).to_dict()
 
 
 class GetterStream(EthereumStream):
-
-    # parent_stream_type = BlocksStream
-
     contract: Contract = None
     contract_name: str = None
 
@@ -80,15 +83,12 @@ class GetterStream(EthereumStream):
 
         properties.append(th.Property('address', AddressType, required=True))
 
-        outputs_abi = self.abi.get('outputs')
-
+        outputs_properties: List[th.Property] = []
         for index, output_abi in enumerate(self.abi.get('outputs')):
-            getter_name = self.abi.get('name')
-            output_name = output_abi.get('name')
-            if not output_name:
-                output_name = getter_name if len(
-                    outputs_abi) == 1 else f"{getter_name}_{index}"
+            output_name = output_abi.get('name') or index
             properties.append(th.Property(output_name, get_jsonschema_type(
                 output_abi.get('type')), required=True))
+        outputs_type = th.ObjectType(*outputs_properties)
+        properties.append(th.Property('outputs', outputs_type, required=True))
 
         return th.PropertiesList(*properties).to_dict()

@@ -1,0 +1,2406 @@
+{
+  "streams": [
+    {
+      "tap_stream_id": "AloeBlend_events_Approval",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "inputs": {
+            "properties": {
+              "owner": {
+                "maxLength": 42,
+                "minLength": 42,
+                "type": [
+                  "string"
+                ]
+              },
+              "spender": {
+                "maxLength": 42,
+                "minLength": 42,
+                "type": [
+                  "string"
+                ]
+              },
+              "amount": {
+                "type": [
+                  "string"
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_events_Approval",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "inputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_events_Deposit",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "inputs": {
+            "properties": {
+              "sender": {
+                "maxLength": 42,
+                "minLength": 42,
+                "type": [
+                  "string"
+                ]
+              },
+              "shares": {
+                "type": [
+                  "string"
+                ]
+              },
+              "amount0": {
+                "type": [
+                  "string"
+                ]
+              },
+              "amount1": {
+                "type": [
+                  "string"
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_events_Deposit",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "inputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_events_Rebalance",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "inputs": {
+            "properties": {
+              "ratio": {
+                "type": [
+                  "string"
+                ]
+              },
+              "shares": {
+                "type": [
+                  "string"
+                ]
+              },
+              "inventory0": {
+                "type": [
+                  "string"
+                ]
+              },
+              "inventory1": {
+                "type": [
+                  "string"
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_events_Rebalance",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "inputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_events_Recenter",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "inputs": {
+            "properties": {
+              "lower": {
+                "type": [
+                  "string"
+                ]
+              },
+              "upper": {
+                "type": [
+                  "string"
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_events_Recenter",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "inputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_events_Reward",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "inputs": {
+            "properties": {
+              "token": {
+                "maxLength": 42,
+                "minLength": 42,
+                "type": [
+                  "string"
+                ]
+              },
+              "amount": {
+                "type": [
+                  "string"
+                ]
+              },
+              "urgency": {
+                "type": [
+                  "string"
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_events_Reward",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "inputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_events_Transfer",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "inputs": {
+            "properties": {
+              "from": {
+                "maxLength": 42,
+                "minLength": 42,
+                "type": [
+                  "string"
+                ]
+              },
+              "to": {
+                "maxLength": 42,
+                "minLength": 42,
+                "type": [
+                  "string"
+                ]
+              },
+              "amount": {
+                "type": [
+                  "string"
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_events_Transfer",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "inputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_events_Withdraw",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "inputs": {
+            "properties": {
+              "sender": {
+                "maxLength": 42,
+                "minLength": 42,
+                "type": [
+                  "string"
+                ]
+              },
+              "shares": {
+                "type": [
+                  "string"
+                ]
+              },
+              "amount0": {
+                "type": [
+                  "string"
+                ]
+              },
+              "amount1": {
+                "type": [
+                  "string"
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_events_Withdraw",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "inputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_B",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_B",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_D",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_D",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_DOMAIN_SEPARATOR",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_DOMAIN_SEPARATOR",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_FLOAT_PERCENTAGE",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_FLOAT_PERCENTAGE",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_K",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_K",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_L",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_L",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_MAINTENANCE_FEE",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_MAINTENANCE_FEE",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_MAX_WIDTH",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_MAX_WIDTH",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_MIN_WIDTH",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_MIN_WIDTH",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_PERMIT_TYPEHASH",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_PERMIT_TYPEHASH",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_RECENTERING_INTERVAL",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_RECENTERING_INTERVAL",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_TOKEN0",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_TOKEN0",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_TOKEN1",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_TOKEN1",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_UNI_POOL",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_UNI_POOL",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_decimals",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_decimals",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_getInventory",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "inventory0": {
+            "type": [
+              "string"
+            ]
+          },
+          "inventory1": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_getInventory",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "inventory0"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "inventory1"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_getRebalanceUrgency",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "urgency": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_getRebalanceUrgency",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "urgency"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_maintenanceBudget0",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_maintenanceBudget0",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_maintenanceBudget1",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_maintenanceBudget1",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_name",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_name",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_packedSlot",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "primaryLower": {
+            "type": [
+              "string"
+            ]
+          },
+          "primaryUpper": {
+            "type": [
+              "string"
+            ]
+          },
+          "limitLower": {
+            "type": [
+              "string"
+            ]
+          },
+          "limitUpper": {
+            "type": [
+              "string"
+            ]
+          },
+          "recenterTimestamp": {
+            "type": [
+              "string"
+            ]
+          },
+          "maxRebalanceGas": {
+            "type": [
+              "string"
+            ]
+          },
+          "maintenanceIsSustainable": {
+            "type": [
+              "string"
+            ]
+          },
+          "locked": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_packedSlot",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "primaryLower"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "primaryUpper"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "limitLower"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "limitUpper"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "recenterTimestamp"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "maxRebalanceGas"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "maintenanceIsSustainable"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "locked"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_silo0",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_silo0",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_silo0Basis",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_silo0Basis",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_silo1",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_silo1",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_silo1Basis",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_silo1Basis",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_symbol",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_symbol",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_totalSupply",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_totalSupply",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "AloeBlend_getters_volatilityOracle",
+      "replication_method": "FULL_TABLE",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "address": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "0": {
+            "maxLength": 42,
+            "minLength": 42,
+            "type": [
+              "string"
+            ]
+          },
+          "outputs": {
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "stream": "AloeBlend_getters_volatilityOracle",
+      "metadata": [
+        {
+          "breadcrumb": [
+            "properties",
+            "address"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            0
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [
+            "properties",
+            "outputs"
+          ],
+          "metadata": {
+            "inclusion": "available"
+          }
+        },
+        {
+          "breadcrumb": [],
+          "metadata": {
+            "inclusion": "available",
+            "selected": true,
+            "table-key-properties": []
+          }
+        }
+      ]
+    }
+  ]
+}
