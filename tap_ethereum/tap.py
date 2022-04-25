@@ -5,7 +5,7 @@ import json
 from etherscan import Etherscan
 from web3 import Web3
 from array import ArrayType
-from typing import List
+from typing import Any, List, Mapping
 from pkg_resources import require
 
 from singer_sdk import Tap, Stream
@@ -13,14 +13,10 @@ from singer_sdk import typing as th  # JSON schema typing helpers
 # TODO: Import your custom stream types here:
 from tap_ethereum.streams import (
     EventStream,
+    BlocksStream,
+    GettersStream,
 )
 from tap_ethereum.typing import AddressType
-
-# TODO: Compile a list of custom stream types here
-#       OR rewrite discover_streams() below with your custom logic.
-STREAM_TYPES = [
-    EventStream,
-]
 
 
 # Just events to start
@@ -89,31 +85,38 @@ class TapEthereum(Tap):
         return Etherscan(self.config.get("etherscan_api_key"))
 
     @property
-    def contracts(self) -> List[Contract]:
-        contracts: List[Contract] = []
-        for contract_config in self.config.get('contracts'):
-            address = contract_config.get('address')
-            if contract_config.get('abi'):
-                with open(contract_config.get('file'), 'r') as abi_file:
-                    abi_json = abi_file.read()
-            elif self.etherscan and address:
-                abi_json = self.etherscan.get_contract_abi(address=address)
-            else:
-                self.logger.error("No CSV file defintions found.")
-                exit(1)
+    def load_contract(self, contract_config: Mapping[str, Any]) -> Contract:
+        address = contract_config.get('address')
+        if contract_config.get('abi'):
+            with open(contract_config.get('file'), 'r') as abi_file:
+                abi_json = abi_file.read()
+        elif address:
+            abi_json = self.etherscan.get_contract_abi(address=address)
+        else:
+            self.logger.error("Missing ABI file and contract address.")
+            exit(1)
 
-            abi = json.loads(abi_json)
-
-            contract = self.web3.eth.contract(abi=abi, address=address)
-            contracts.append(contract)
-        return contracts
+        abi = json.loads(abi_json)
+        contract = self.web3.eth.contract(abi=abi, address=address)
+        return contract
 
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
 
         streams: List[Stream] = []
-        for contract in self.contracts:
-            for event_abi in contract.events._events:
+
+        streams.append()
+
+        for contract_config in self.config.get('contracts'):
+            contract = self.load_contract(contract_config)
+
+            events_abi = contract.events._events
+
+            if contract_config.get('events'):
+                events_abi = filter(lambda event_abi: event_abi.get(
+                    'name') in contract_config.get('events'), events_abi)
+
+            for event_abi in events_abi:
                 stream = EventStream(
                     tap=self,
                     abi=event_abi,
@@ -121,5 +124,20 @@ class TapEthereum(Tap):
                     address=contract.address,
                 )
                 streams.append(stream)
+
+            getters_abi = filter(lambda function_abi: function_abi.get(
+                'stateMutability') == 'view', contract.all_functions())
+
+            if contract_config.get('address'):
+                if contract_config.get('getters'):
+                    getters_abi = filter(lambda getter_abi: getter_abi.get(
+                        'name') in contract_config.get('getters'), getters_abi)
+
+                stream = GettersStream(
+                    tap=self,
+                    abi=getters_abi,
+                    contract=contract,
+                    address=contract.address,
+                )
 
         return streams

@@ -64,6 +64,12 @@ class EventStream(EthereumStream):
 class GettersStream(EthereumStream):
     name = "getters"
 
-    parent_stream_type = BlocksStream
+    # parent_stream_type = BlocksStream
 
-    ignore_parent_replication_keys = True
+    def __init__(self, *args, **kwargs):
+        # cache file_config so we dont need to go iterating the config list again later
+        self.abi = kwargs.pop("abi")
+        self.address = kwargs.pop("address")
+        self.contract = kwargs.pop('contract')
+
+        super().__init__(*args, **kwargs)
