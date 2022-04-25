@@ -1,5 +1,6 @@
 """Ethereum tap class."""
 
+from sqlalchemy import desc
 from web3.eth import Contract
 import json
 from etherscan import Etherscan
@@ -33,15 +34,21 @@ class TapEthereum(Tap):
             th.URIType,
             description="URI for a Websocket based JSON-RPC server",
             required=True,
-        ),
+        ),  # transactions? how to monitor every transaction? is it worth doing that?
         th.Property(
             "contracts",
             th.ArrayType(
                 th.ObjectType(
                     th.Property(
-                        "address",
-                        AddressType,
-                        description="Address of the smart contract (defaults to fetching all matching events)"
+                        "name",
+                        th.StringType,
+                        description="Name of the smart contract",
+                        required=True
+                    ),
+                    th.Property(
+                        "addresses",
+                        th.ArrayType(AddressType),
+                        description="Addresses of the deployed smart contract. If not provided, fetches all events using ABI."
                     ),
                     th.Property(
                         "abi",
