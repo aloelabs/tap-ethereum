@@ -80,6 +80,12 @@ class TapEthereum(Tap):
             th.StringType,
             description="API key for Etherscan paid plan (optional)",
             default=""
+        ),
+        th.Property(
+            "confirmations",
+            th.IntegerType,
+            description="Number of confirmations to wait before polling a new block",
+            default=12,
         )
     ).to_dict()
 

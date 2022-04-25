@@ -13,9 +13,17 @@ from web3.eth import Contract
 
 from tap_ethereum.typing import AddressType
 
+# TODO: how to deal with uncles?
+
 
 class BlocksStream(EthereumStream):
     name = "blocks"
+
+    schema = th.PropertiesList(
+        th.Property("timestamp", th.IntegerType, required=True),
+        th.Property("number", th.IntegerType, required=True),
+
+    )
 
     pass
 
