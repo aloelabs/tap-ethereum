@@ -31,7 +31,7 @@ class TapEthereum(Tap):
         th.Property(
             "rpc_endpoint_uri",
             th.URIType,
-            description="URI for a HTTP or WS based JSON-RPC server",
+            description="URI for a Websocket based JSON-RPC server",
             required=True,
         ),
         th.Property(
@@ -43,6 +43,7 @@ class TapEthereum(Tap):
                         th.StringType,
                         description="Name of the contract"
                     ),
+                    # TODO: create custom address type
                     th.Property(
                         "address",
                         th.StringType,
@@ -66,7 +67,7 @@ class TapEthereum(Tap):
                     th.Property(
                         "events",
                         th.ArrayType(th.StringType),
-                        description="Events to track"
+                        description="Events to track (defaults to tracking all smart contract events)"
                     ),
                     # th.Property(
                     #     "views",
@@ -80,9 +81,8 @@ class TapEthereum(Tap):
         th.Property(
             "etherscan_api_key",
             th.StringType,
-            description="Option API key for Etherscan"
+            description="API key for Etherscan paid plan (optional)"
         )
-
     ).to_dict()
 
     def _initialize_web3_provider():
