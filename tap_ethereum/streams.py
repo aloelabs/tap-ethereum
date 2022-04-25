@@ -48,13 +48,13 @@ class UsersStream(EthereumStream):
     ).to_dict()
 
 
-class GroupsStream(EthereumStream):
-    """Define custom stream."""
-    name = "groups"
-    primary_keys = ["id"]
-    replication_key = "modified"
-    schema = th.PropertiesList(
-        th.Property("name", th.StringType),
-        th.Property("id", th.StringType),
-        th.Property("modified", th.DateTimeType),
-    ).to_dict()
+# class GroupsStream(EthereumStream):
+#     """Define custom stream."""
+#     name = "groups"
+#     primary_keys = ["id"]
+#     replication_key = "modified"
+#     schema = th.PropertiesList(
+#         th.Property("name", th.StringType),
+#         th.Property("id", th.StringType),
+#         th.Property("modified", th.DateTimeType),
+#     ).to_dict()

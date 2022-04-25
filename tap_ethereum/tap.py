@@ -10,13 +10,11 @@ from singer_sdk import typing as th  # JSON schema typing helpers
 from tap_ethereum.streams import (
     EthereumStream,
     UsersStream,
-    GroupsStream,
 )
 # TODO: Compile a list of custom stream types here
 #       OR rewrite discover_streams() below with your custom logic.
 STREAM_TYPES = [
     UsersStream,
-    GroupsStream,
 ]
 
 # Just events to start
@@ -59,7 +57,6 @@ class TapEthereum(Tap):
                             th.Property(
                                 "file",
                                 th.StringType,
-                                required=True,
                             )
                         ),
                         description="ABI of the contract (defaults to fetching ABI Etherscan if not provided)"
@@ -69,11 +66,11 @@ class TapEthereum(Tap):
                         th.ArrayType(th.StringType),
                         description="Events to track (defaults to tracking all smart contract events)"
                     ),
-                    # th.Property(
-                    #     "views",
-                    #     th.ArrayType(th.StringType),
-                    #     description="View functions or public properties to poll every new block"
-                    # )
+                    th.Property(
+                        "getters",
+                        th.ArrayType(th.StringType),
+                        description="Getter functions to poll every block (defaults to tracking all getter functions)"
+                    )
                 )
             ),
             required=True
