@@ -1,0 +1,1 @@
+* What inputs? What is format of config file?

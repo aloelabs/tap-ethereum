@@ -1,6 +1,8 @@
 """Ethereum tap class."""
 
+from array import ArrayType
 from typing import List
+from pkg_resources import require
 
 from singer_sdk import Tap, Stream
 from singer_sdk import typing as th  # JSON schema typing helpers
@@ -17,6 +19,8 @@ STREAM_TYPES = [
     GroupsStream,
 ]
 
+# Just events to start
+
 
 class TapEthereum(Tap):
     """Ethereum tap class."""
@@ -25,29 +29,64 @@ class TapEthereum(Tap):
     # TODO: Update this section with the actual config values you expect:
     config_jsonschema = th.PropertiesList(
         th.Property(
-            "auth_token",
-            th.StringType,
+            "rpc_endpoint_uri",
+            th.URIType,
+            description="URI for a HTTP or WS based JSON-RPC server",
             required=True,
-            description="The token to authenticate against the API service"
         ),
         th.Property(
-            "project_ids",
-            th.ArrayType(th.StringType),
-            required=True,
-            description="Project IDs to replicate"
+            "contracts",
+            th.ArrayType(
+                th.ObjectType(
+                    th.Property(
+                        "name",
+                        th.StringType,
+                        description="Name of the contract"
+                    ),
+                    th.Property(
+                        "address",
+                        th.StringType,
+                        description="Address of the smart contract (defaults to fetching all matching events)"
+                    ),
+                    th.Property(
+                        "abi",
+                        th.ObjectType(
+                            th.Property(
+                                "name",
+                                th.StringType,
+                            ),
+                            th.Property(
+                                "file",
+                                th.StringType,
+                                required=True,
+                            )
+                        ),
+                        description="ABI of the contract (defaults to fetching ABI Etherscan if not provided)"
+                    ),
+                    th.Property(
+                        "events",
+                        th.ArrayType(th.StringType),
+                        description="Events to track"
+                    ),
+                    # th.Property(
+                    #     "views",
+                    #     th.ArrayType(th.StringType),
+                    #     description="View functions or public properties to poll every new block"
+                    # )
+                )
+            ),
+            required=True
         ),
         th.Property(
-            "start_date",
-            th.DateTimeType,
-            description="The earliest record date to sync"
-        ),
-        th.Property(
-            "api_url",
+            "etherscan_api_key",
             th.StringType,
-            default="https://api.mysample.com",
-            description="The url for the API service"
-        ),
+            description="Option API key for Etherscan"
+        )
+
     ).to_dict()
+
+    def _initialize_web3_provider():
+        pass
 
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
