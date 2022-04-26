@@ -117,6 +117,9 @@ class TapEthereum(Tap):
 
         streams: List[Stream] = []
 
+        streams.append(BlocksStream(tap=self, web3=self.web3,
+                       confirmations=self.config.get('confirmations')))
+
         for contract_config in self.config.get('contracts'):
             contract = self.load_contract(contract_config)
             contract_name = contract_config.get('name')

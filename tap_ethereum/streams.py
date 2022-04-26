@@ -15,17 +15,22 @@ from tap_ethereum.typing import AddressType
 
 # TODO: how to deal with uncles?
 
+# TODO: download this from somewhere?
+
 
 class BlocksStream(EthereumStream):
     name = "blocks"
 
+    confirmations: int = None
+
     schema = th.PropertiesList(
         th.Property("timestamp", th.IntegerType, required=True),
         th.Property("number", th.IntegerType, required=True),
+    ).to_dict()
 
-    )
-
-    pass
+    def __init__(self, *args, **kwargs):
+        self.confirmations = kwargs.pop("confirmations")
+        super().__init__(*args, **kwargs)
 
 
 def get_jsonschema_type(abi_type: str) -> th.JSONTypeHelper:
