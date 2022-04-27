@@ -65,12 +65,6 @@ class TapEthereum(Tap):
                         th.ArrayType(th.StringType),
                         description="Getter functions to poll every block (defaults to tracking all getter functions)"
                     ),
-                    th.Property(
-                        "start_block",
-                        th.IntegerType,
-                        default=0,
-                        description="Block number to start fetching from"
-                    )
                 )
             ),
             required=True
@@ -86,6 +80,12 @@ class TapEthereum(Tap):
             th.IntegerType,
             description="Number of confirmations to wait before polling a new block",
             default=12,
+        ),
+        th.Property(
+            "start_date",
+            th.IntegerType,
+            default=0,
+            description="Block number to start fetching from"
         )
     ).to_dict()
 
@@ -118,48 +118,48 @@ class TapEthereum(Tap):
         streams: List[Stream] = []
 
         streams.append(BlocksStream(tap=self, web3=self.web3,
-                       confirmations=self.config.get('confirmations')))
+                       confirmations=self.config.get('confirmations'), start_block=self.config.get('start_block')))
 
-        for contract_config in self.config.get('contracts'):
-            contract = self.load_contract(contract_config)
-            contract_name = contract_config.get('name')
+        # for contract_config in self.config.get('contracts'):
+        #     contract = self.load_contract(contract_config)
+        #     contract_name = contract_config.get('name')
 
-            events_abi = contract.events._events
+        #     events_abi = contract.events._events
 
-            if contract_config.get('events'):
-                events_abi = filter(lambda event_abi: event_abi.get(
-                    'name') in contract_config.get('events'), events_abi)
+        #     if contract_config.get('events'):
+        #         events_abi = filter(lambda event_abi: event_abi.get(
+        #             'name') in contract_config.get('events'), events_abi)
 
-            for event_abi in events_abi:
-                stream = EventStream(
-                    tap=self,
-                    abi=event_abi,
-                    web3=self.web3,
-                    contract_name=contract_name,
-                )
-                streams.append(stream)
+        #     for event_abi in events_abi:
+        #         stream = EventStream(
+        #             tap=self,
+        #             abi=event_abi,
+        #             web3=self.web3,
+        #             contract_name=contract_name,
+        #         )
+        #         streams.append(stream)
 
-            getters_abi = map(
-                lambda contract_function: contract_function.abi, contract.all_functions())
-            getters_abi = filter(lambda function_abi: function_abi.get(
-                'stateMutability') == 'view', getters_abi)
+        #     getters_abi = map(
+        #         lambda contract_function: contract_function.abi, contract.all_functions())
+        #     getters_abi = filter(lambda function_abi: function_abi.get(
+        #         'stateMutability') == 'view', getters_abi)
 
-            if contract_config.get('address'):
-                # TODO: support getters with inputs
-                getters_abi = filter(lambda getter_abi: len(getter_abi.get(
-                    'inputs')) == 0, getters_abi)
-                if contract_config.get('getters'):
-                    getters_abi = filter(lambda getter_abi: getter_abi.get(
-                        'name') in contract_config.get('getters'), getters_abi)
+        #     if contract_config.get('address'):
+        #         # TODO: support getters with inputs
+        #         getters_abi = filter(lambda getter_abi: len(getter_abi.get(
+        #             'inputs')) == 0, getters_abi)
+        #         if contract_config.get('getters'):
+        #             getters_abi = filter(lambda getter_abi: getter_abi.get(
+        #                 'name') in contract_config.get('getters'), getters_abi)
 
-                for getter_abi in getters_abi:
-                    stream = GetterStream(
-                        tap=self,
-                        abi=getter_abi,
-                        address=contract.address,
-                        web3=self.web3,
-                        contract_name=contract_name,
-                    )
-                    streams.append(stream)
+        #         for getter_abi in getters_abi:
+        #             stream = GetterStream(
+        #                 tap=self,
+        #                 abi=getter_abi,
+        #                 address=contract.address,
+        #                 web3=self.web3,
+        #                 contract_name=contract_name,
+        #             )
+        #             streams.append(stream)
 
         return streams

@@ -23,14 +23,32 @@ class BlocksStream(EthereumStream):
 
     confirmations: int = None
 
+    current_block_number: int = None
+
+    replication_key = "timestamp"
+
     schema = th.PropertiesList(
-        th.Property("timestamp", th.IntegerType, required=True),
+        th.Property("timestamp", th.DateTimeType, required=True),
         th.Property("number", th.IntegerType, required=True),
     ).to_dict()
 
     def __init__(self, *args, **kwargs):
         self.confirmations = kwargs.pop("confirmations")
+        self.current_block_number = kwargs.pop("start_block")
         super().__init__(*args, **kwargs)
+
+    def get_records(self, context: Optional[dict]) -> Iterable[dict]:
+        """Return a generator of row-type dictionary objects.
+
+        The optional `context` argument is used to identify a specific slice of the
+        stream if partitioning is required for the stream. Most implementations do not
+        require partitioning and should ignore the `context` argument.
+        """
+        # TODO: Write logic to extract data from the upstream source.
+        # rows = mysource.getall()
+        # for row in rows:
+        #     yield row.to_dict()
+        raise NotImplementedError("The method is not yet implemented (TODO)")
 
 
 def get_jsonschema_type(abi_type: str) -> th.JSONTypeHelper:
