@@ -97,20 +97,19 @@ class TapEthereum(Tap):
     def etherscan(self) -> Etherscan:
         return Etherscan(self.config.get("etherscan_api_key"))
 
-    def load_contract(self, contract_config: Mapping[str, Any]) -> Contract:
-        address = contract_config.get('address')
+    def load_abi(self, contract_config: Mapping[str, Any]) -> Contract:
+        addresses = contract_config.get('addresses')
         if contract_config.get('abi'):
             with open(contract_config.get('file'), 'r') as abi_file:
                 abi_json = abi_file.read()
-        elif address:
-            abi_json = self.etherscan.get_contract_abi(address=address)
+        elif addresses:
+            abi_json = self.etherscan.get_contract_abi(address=addresses[0])
         else:
             self.logger.error("Missing ABI file and contract address.")
             exit(1)
 
         abi = json.loads(abi_json)
-        contract = self.web3.eth.contract(abi=abi, address=address)
-        return contract
+        return abi
 
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
@@ -120,46 +119,51 @@ class TapEthereum(Tap):
         streams.append(BlocksStream(tap=self, web3=self.web3,
                        confirmations=self.config.get('confirmations'), start_block=self.config.get('start_block')))
 
-        # for contract_config in self.config.get('contracts'):
-        #     contract = self.load_contract(contract_config)
-        #     contract_name = contract_config.get('name')
+        for contract_config in self.config.get('contracts'):
+            contract_name = contract_config.get('name')
+            abi = self.load_abi(contract_config)
 
-        #     events_abi = contract.events._events
+            # events_abi = contract.events._events
 
-        #     if contract_config.get('events'):
-        #         events_abi = filter(lambda event_abi: event_abi.get(
-        #             'name') in contract_config.get('events'), events_abi)
+            # if contract_config.get('events'):
+            #     events_abi = filter(lambda event_abi: event_abi.get(
+            #         'name') in contract_config.get('events'), events_abi)
 
-        #     for event_abi in events_abi:
-        #         stream = EventStream(
-        #             tap=self,
-        #             abi=event_abi,
-        #             web3=self.web3,
-        #             contract_name=contract_name,
-        #         )
-        #         streams.append(stream)
+            # for event_abi in events_abi:
+            #     stream = EventStream(
+            #         tap=self,
+            #         abi=event_abi,
+            #         web3=self.web3,
+            #         contract_name=contract_name,
+            #     )
+            #     streams.append(stream)
 
-        #     getters_abi = map(
-        #         lambda contract_function: contract_function.abi, contract.all_functions())
-        #     getters_abi = filter(lambda function_abi: function_abi.get(
-        #         'stateMutability') == 'view', getters_abi)
+            # getters_abi = map(
+            #     lambda contract_function: contract_function.abi, contract.all_functions())
+            # getters_abi = filter(lambda function_abi: function_abi.get(
+            #     'stateMutability') == 'view', getters_abi)
 
-        #     if contract_config.get('address'):
-        #         # TODO: support getters with inputs
-        #         getters_abi = filter(lambda getter_abi: len(getter_abi.get(
-        #             'inputs')) == 0, getters_abi)
-        #         if contract_config.get('getters'):
-        #             getters_abi = filter(lambda getter_abi: getter_abi.get(
-        #                 'name') in contract_config.get('getters'), getters_abi)
+            contract = self.load_contract(contract_config)
 
-        #         for getter_abi in getters_abi:
-        #             stream = GetterStream(
-        #                 tap=self,
-        #                 abi=getter_abi,
-        #                 address=contract.address,
-        #                 web3=self.web3,
-        #                 contract_name=contract_name,
-        #             )
-        #             streams.append(stream)
+            if contract_config.get('addresses'):
+                contracts = []
+                for address in contract_config.get('addresses'):
+
+                    # TODO: support getters with inputs
+                getters_abi = filter(lambda getter_abi: len(getter_abi.get(
+                    'inputs')) == 0, getters_abi)
+                if contract_config.get('getters'):
+                    getters_abi = filter(lambda getter_abi: getter_abi.get(
+                        'name') in contract_config.get('getters'), getters_abi)
+
+                for getter_abi in getters_abi:
+                    stream = GetterStream(
+                        tap=self,
+                        abi=getter_abi,
+                        address=contract.address,
+                        web3=self.web3,
+                        contract_name=contract_name,
+                    )
+                    streams.append(stream)
 
         return streams

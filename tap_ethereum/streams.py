@@ -20,6 +20,9 @@ from datetime import datetime
 
 # TODO: download this from somewhere?
 
+# pull out process block
+# commonality is that it processes every block
+
 
 class BlocksStream(EthereumStream):
     name = "blocks"
@@ -42,6 +45,13 @@ class BlocksStream(EthereumStream):
         self.start_block = kwargs.pop("start_block")
         super().__init__(*args, **kwargs)
 
+    def process_block(self, block_number: int, context: Optional[dict] = None) -> Optional[dict]:
+        block = self.web3.eth.get_block(block_number)
+        return dict(
+            timestamp=datetime.fromtimestamp(block["timestamp"]),
+            number=block["number"]
+        )
+
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
         """Return a generator of row-type dictionary objects.
 
@@ -60,14 +70,58 @@ class BlocksStream(EthereumStream):
         latest_block_number = self.web3.eth.get_block_number()
 
         while current_block_number < latest_block_number - self.confirmations:
-            block = self.web3.eth.get_block(current_block_number)
-            yield dict(
-                timestamp=datetime.fromtimestamp(block["timestamp"]),
-                number=block["number"]
-            )
+            yield self.process_block(current_block_number, context=context)
             current_block_number += 1
             if current_block_number == latest_block_number - self.confirmations:
                 latest_block_number = self.web3.eth.get_block_number()
+
+
+class GetterStream(BlocksStream):
+    contracts: Dict[str, Contract] = None
+    contract_name: str = None
+
+    def __init__(self, *args, **kwargs):
+        self.abi = kwargs.pop("abi")
+        contracts: List[Contract] = kwargs.pop("contracts")
+        for contract in contracts:
+            self.contracts[contract.address] = contract
+        self.contract_name = kwargs.pop("contract_name")
+        super().__init__(*args, **kwargs)
+
+    @property
+    def getter_name(self) -> str:
+        return self.abi.get('name')
+
+    @property
+    def name(self) -> str:
+        # namespace table somehow
+        return f"{self.contract_name}_getters_{self.getter_name}"
+
+    def process_block(self, block_number: int, context: Optional[dict] = None) -> Optional[dict]:
+        contract = self.contracts[context.get('address')]
+        response = contract.functions[self.getter_name]().call(
+            block_identifier=block_number)
+        print(response)
+
+    @property
+    def partitions(self) -> List[dict]:
+        return [{"address": contract.address} for contract in self.contracts]
+
+    @property
+    def schema(self) -> dict:
+        properties: List[th.Property] = []
+
+        properties.append(th.Property('address', AddressType, required=True))
+
+        outputs_properties: List[th.Property] = []
+        for index, output_abi in enumerate(self.abi.get('outputs')):
+            output_name = output_abi.get('name') or index
+            properties.append(th.Property(output_name, get_jsonschema_type(
+                output_abi.get('type')), required=True))
+        outputs_type = th.ObjectType(*outputs_properties)
+        properties.append(th.Property('outputs', outputs_type, required=True))
+
+        return th.PropertiesList(*properties).to_dict()
 
 
 def get_jsonschema_type(abi_type: str) -> th.JSONTypeHelper:
@@ -108,37 +162,5 @@ class EventStream(EthereumStream):
 
         # # TODO: clean up code
         properties.append(th.Property('inputs', inputs_type, required=True))
-
-        return th.PropertiesList(*properties).to_dict()
-
-
-class GetterStream(EthereumStream):
-    contract: Contract = None
-    contract_name: str = None
-
-    def __init__(self, *args, **kwargs):
-        self.abi = kwargs.pop("abi")
-        self.address = kwargs.pop("address")
-        self.contract_name = kwargs.pop("contract_name")
-        super().__init__(*args, **kwargs)
-
-    @property
-    def name(self) -> str:
-        # namespace table somehow
-        return f"{self.contract_name}_getters_{self.abi.get('name')}"
-
-    @property
-    def schema(self) -> dict:
-        properties: List[th.Property] = []
-
-        properties.append(th.Property('address', AddressType, required=True))
-
-        outputs_properties: List[th.Property] = []
-        for index, output_abi in enumerate(self.abi.get('outputs')):
-            output_name = output_abi.get('name') or index
-            properties.append(th.Property(output_name, get_jsonschema_type(
-                output_abi.get('type')), required=True))
-        outputs_type = th.ObjectType(*outputs_properties)
-        properties.append(th.Property('outputs', outputs_type, required=True))
 
         return th.PropertiesList(*properties).to_dict()
