@@ -7,5 +7,6 @@
         }
     ],
     "etherscan_api_key": "",
-    "confirmations": 12
+    "confirmations": 12,
+    "start_block": 14164514
 }

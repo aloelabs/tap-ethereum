@@ -3,7 +3,9 @@
 from asyncio import events
 from pathlib import Path
 from re import L
+from tracemalloc import start
 from typing import Any, Dict, Optional, Union, List, Iterable
+from pendulum import datetime
 
 from singer_sdk import Stream, typing as th  # JSON Schema typing helpers
 
@@ -12,6 +14,7 @@ from web3.types import ABIEvent
 from web3.eth import Contract
 
 from tap_ethereum.typing import AddressType
+from datetime import datetime
 
 # TODO: how to deal with uncles?
 
@@ -23,9 +26,11 @@ class BlocksStream(EthereumStream):
 
     confirmations: int = None
 
-    current_block_number: int = None
+    replication_key = "number"
 
-    replication_key = "timestamp"
+    STATE_MSG_FREQUENCY = 1
+
+    start_block: int
 
     schema = th.PropertiesList(
         th.Property("timestamp", th.DateTimeType, required=True),
@@ -34,7 +39,7 @@ class BlocksStream(EthereumStream):
 
     def __init__(self, *args, **kwargs):
         self.confirmations = kwargs.pop("confirmations")
-        self.current_block_number = kwargs.pop("start_block")
+        self.start_block = kwargs.pop("start_block")
         super().__init__(*args, **kwargs)
 
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
@@ -48,7 +53,21 @@ class BlocksStream(EthereumStream):
         # rows = mysource.getall()
         # for row in rows:
         #     yield row.to_dict()
-        raise NotImplementedError("The method is not yet implemented (TODO)")
+        # raise NotImplementedError("The method is not yet implemented (TODO)")
+        start_block_number = self.get_starting_replication_key_value(
+            context) or self.start_block
+        current_block_number = start_block_number + 1
+        latest_block_number = self.web3.eth.get_block_number()
+
+        while current_block_number < latest_block_number - self.confirmations:
+            block = self.web3.eth.get_block(current_block_number)
+            yield dict(
+                timestamp=datetime.fromtimestamp(block["timestamp"]),
+                number=block["number"]
+            )
+            current_block_number += 1
+            if current_block_number == latest_block_number - self.confirmations:
+                latest_block_number = self.web3.eth.get_block_number()
 
 
 def get_jsonschema_type(abi_type: str) -> th.JSONTypeHelper:

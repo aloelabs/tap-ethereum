@@ -32,7 +32,7 @@ class TapEthereum(Tap):
         th.Property(
             "rpc_endpoint_uri",
             th.URIType,
-            description="URI for a Websocket based JSON-RPC server",
+            description="URI for a HTTP based JSON-RPC server",
             required=True,
         ),  # transactions? how to monitor every transaction? is it worth doing that?
         th.Property(
@@ -82,7 +82,7 @@ class TapEthereum(Tap):
             default=12,
         ),
         th.Property(
-            "start_date",
+            "start_block",
             th.IntegerType,
             default=0,
             description="Block number to start fetching from"
@@ -91,7 +91,7 @@ class TapEthereum(Tap):
 
     @property
     def web3(self) -> Web3:
-        return Web3(Web3.WebsocketProvider(self.config.get("rpc_endpoint_uri")))
+        return Web3(Web3.HTTPProvider(self.config.get("rpc_endpoint_uri")))
 
     @property
     def etherscan(self) -> Etherscan:

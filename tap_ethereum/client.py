@@ -21,6 +21,8 @@ import os
 class EthereumStream(Stream):
     """Stream class for Ethereum streams."""
 
+    web3: Web3
+
     def __init__(self, *args, **kwargs) -> None:
         self.web3 = kwargs.pop("web3")
 
