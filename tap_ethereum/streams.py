@@ -77,8 +77,10 @@ class BlocksStream(EthereumStream):
 
 
 class GetterStream(BlocksStream):
-    contracts: Dict[str, Contract] = None
+    contracts: Dict[str, Contract] = dict()
     contract_name: str = None
+
+    output_labels: List[str] = []
 
     def __init__(self, *args, **kwargs):
         self.abi = kwargs.pop("abi")
@@ -86,6 +88,8 @@ class GetterStream(BlocksStream):
         for contract in contracts:
             self.contracts[contract.address] = contract
         self.contract_name = kwargs.pop("contract_name")
+        for index, output_abi in enumerate(self.abi.get('outputs')):
+            self.output_labels.append(output_abi.get('name') or index)
         super().__init__(*args, **kwargs)
 
     @property
@@ -99,24 +103,30 @@ class GetterStream(BlocksStream):
 
     def process_block(self, block_number: int, context: Optional[dict] = None) -> Optional[dict]:
         contract = self.contracts[context.get('address')]
-        response = contract.functions[self.getter_name]().call(
+        outputs = contract.functions[self.getter_name]().call(
             block_identifier=block_number)
-        print(response)
+        outputs = [outputs] if not isinstance(outputs, list) else outputs
+        return dict(
+            address=context.get('address'),
+            number=block_number,
+            outputs={label: value for (label, value) in zip(
+                self.output_labels, outputs)}
+        )
 
     @property
     def partitions(self) -> List[dict]:
-        return [{"address": contract.address} for contract in self.contracts]
+        return [{"address": address} for address in self.contracts.keys()]
 
     @property
     def schema(self) -> dict:
         properties: List[th.Property] = []
 
         properties.append(th.Property('address', AddressType, required=True))
+        properties.append(th.Property('number', th.IntegerType, required=True))
 
         outputs_properties: List[th.Property] = []
         for index, output_abi in enumerate(self.abi.get('outputs')):
-            output_name = output_abi.get('name') or index
-            properties.append(th.Property(output_name, get_jsonschema_type(
+            properties.append(th.Property(self.output_labels[index], get_jsonschema_type(
                 output_abi.get('type')), required=True))
         outputs_type = th.ObjectType(*outputs_properties)
         properties.append(th.Property('outputs', outputs_type, required=True))

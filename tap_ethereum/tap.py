@@ -1,6 +1,7 @@
 """Ethereum tap class."""
 
 from sqlalchemy import desc
+import web3
 from web3.eth import Contract
 import json
 from etherscan import Etherscan
@@ -116,12 +117,13 @@ class TapEthereum(Tap):
 
         streams: List[Stream] = []
 
-        streams.append(BlocksStream(tap=self, web3=self.web3,
-                       confirmations=self.config.get('confirmations'), start_block=self.config.get('start_block')))
+        # streams.append(BlocksStream(tap=self, web3=self.web3,
+        #                confirmations=self.config.get('confirmations'), start_block=self.config.get('start_block')))
 
         for contract_config in self.config.get('contracts'):
             contract_name = contract_config.get('name')
             abi = self.load_abi(contract_config)
+            contract_class = self.web3.eth.contract(abi=abi)
 
             # events_abi = contract.events._events
 
@@ -138,17 +140,15 @@ class TapEthereum(Tap):
             #     )
             #     streams.append(stream)
 
-            # getters_abi = map(
-            #     lambda contract_function: contract_function.abi, contract.all_functions())
-            # getters_abi = filter(lambda function_abi: function_abi.get(
-            #     'stateMutability') == 'view', getters_abi)
-
-            contract = self.load_contract(contract_config)
+            getters_abi = map(
+                lambda contract_function: contract_function.abi, contract_class.all_functions())
+            getters_abi = filter(lambda function_abi: function_abi.get(
+                'stateMutability') == 'view', getters_abi)
 
             if contract_config.get('addresses'):
-                contracts = []
+                contract_instances = []
                 for address in contract_config.get('addresses'):
-
+                    contract_instances.append(contract_class(address))
                     # TODO: support getters with inputs
                 getters_abi = filter(lambda getter_abi: len(getter_abi.get(
                     'inputs')) == 0, getters_abi)
@@ -160,9 +160,11 @@ class TapEthereum(Tap):
                     stream = GetterStream(
                         tap=self,
                         abi=getter_abi,
-                        address=contract.address,
+                        contracts=contract_instances,
                         web3=self.web3,
                         contract_name=contract_name,
+                        confirmations=self.config.get('confirmations'),
+                        start_block=self.config.get('start_block')
                     )
                     streams.append(stream)
 
