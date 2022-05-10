@@ -174,3 +174,6 @@ class EventStream(EthereumStream):
         properties.append(th.Property('inputs', inputs_type, required=True))
 
         return th.PropertiesList(*properties).to_dict()
+
+    def get_records(self, context: Optional[dict]) -> Iterable[dict]:
+        pass
