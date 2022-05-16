@@ -13,10 +13,10 @@ license = "Apache 2.0"
 python = "<3.11,>=3.7.2"
 requests = "^2.25.1"
 singer-sdk = "^0.4.6"
-web3 = "^5.29.0"
 etherscan-python = "^2.1.0"
 jupyter = "^1.0.0"
 python-dotenv = "^0.20.0"
+web3 = "^5.29.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
