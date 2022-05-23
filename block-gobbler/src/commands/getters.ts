@@ -4,6 +4,7 @@ import {contractFlags, rpcFlags} from '../utils/flags'
 import * as fs from 'node:fs'
 import {Example} from '@oclif/core/lib/interfaces'
 import {AsyncBatchRequest} from '../utils/batch'
+import {range} from 'lodash'
 
 export default class Getters extends Command {
   static description = 'describe the command here'
@@ -27,17 +28,25 @@ export default class Getters extends Command {
 
     const contract = new web3.eth.Contract(abiJson, flags.address)
 
-    // in order
-    // batching
-    // asyncify
+    const endBlock = await web3.eth.getBlockNumber()
 
-    const batch = new AsyncBatchRequest(web3)
-    batch.add(contract.methods.getInventory().call.request, flags.startBlock)
-    batch.add(
-      contract.methods.getInventory().call.request,
-      flags.startBlock + 10_000,
+    const batches = range(flags.startBlock, endBlock + 1, flags.batchSize).map(
+      batchStartBlock =>
+        range(
+          batchStartBlock,
+          Math.min(endBlock + 1, batchStartBlock + flags.batchSize),
+        ),
     )
-    const data = await batch.execute()
-    console.log(data)
+
+    console.log(batches, null, 4)
+
+    // const batch = new AsyncBatchRequest(web3)
+    // batch.add(contract.methods.getInventory().call.request, flags.startBlock)
+    // batch.add(
+    //   contract.methods.getInventory().call.request,
+    //   flags.startBlock + 10_000,
+    // )
+    // const data = await batch.execute()
+    // console.log(data)
   }
 }
