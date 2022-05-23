@@ -1,5 +1,6 @@
 import {BatchRequest} from 'web3-core/types'
 import Web3 from 'web3'
+import {range} from 'lodash'
 
 export class AsyncBatchRequest {
   batch: BatchRequest
@@ -26,4 +27,19 @@ export class AsyncBatchRequest {
     this.batch.execute()
     return await Promise.all(this.promises)
   }
+}
+
+export const getBlockNumberBatches = (
+  startBlock: number,
+  endBlock: number,
+  batchSize: number,
+  blockInterval = 1,
+) => {
+  return range(startBlock, endBlock + 1, batchSize).map(batchStartBlock =>
+    range(
+      batchStartBlock,
+      Math.min(endBlock + 1, batchStartBlock + batchSize),
+      blockInterval,
+    ),
+  )
 }

@@ -2,10 +2,25 @@ import {Command, Flags} from '@oclif/core'
 import Web3 from 'web3'
 import {contractFlags, intervalFlags, rpcFlags} from '../utils/flags'
 import * as fs from 'node:fs'
-import {Example} from '@oclif/core/lib/interfaces'
-import {AsyncBatchRequest} from '../utils/batch'
-import {flatten, range} from 'lodash'
+import {AsyncBatchRequest, getBlockNumberBatches} from '../utils/batch'
+import Heap from 'heap-js'
 import pLimit from 'p-limit'
+
+const callResultToArray = (result: any) => {
+  let resultArray
+  if (typeof result === 'object') {
+    resultArray = []
+    for (let i = 0; i.toString() in result; i++) {
+      resultArray.push(result[i.toString()])
+    }
+  } else {
+    resultArray = [result]
+  }
+
+  return resultArray
+}
+
+type GetterResult = [number, any[]]
 
 export default class Getters extends Command {
   static description = 'describe the command here'
@@ -28,15 +43,10 @@ export default class Getters extends Command {
 
     const endBlock = flags.endBlock ?? (await web3.eth.getBlockNumber())
 
-    const blockNumberBatches = range(
+    const blockNumberBatches = getBlockNumberBatches(
       flags.startBlock,
-      endBlock + 1,
+      endBlock,
       flags.batchSize,
-    ).map(batchStartBlock =>
-      range(
-        batchStartBlock,
-        Math.min(endBlock + 1, batchStartBlock + flags.batchSize),
-      ),
     )
 
     const concurrencyLimit = pLimit(flags.concurrency)
@@ -44,6 +54,10 @@ export default class Getters extends Command {
     const batchPromises: Promise<unknown>[] = []
 
     // TODO: figure out multicall
+
+    const minHeap = new Heap<GetterResult>()
+
+    let lastEmittedBlock = flags.startBlock - 1
 
     for (const getterName of flags.getter) {
       batchPromises.push(
@@ -54,27 +68,21 @@ export default class Getters extends Command {
               batch.add(contract.methods[getterName]().call.request, block)
             }
 
-            const batchData = (await batch.execute()) as [number, any][]
-            // TODO: put on priority queue and print out earlier
-            return batchData.map(([blockNumber, result]) => {
-              if (typeof result === 'object') {
-                const resultArray = []
-                for (let i = 0; i.toString() in result; i++) {
-                  resultArray[i] = result[i.toString()]
-                }
-
-                result = resultArray
-              }
-
-              return [blockNumber, result]
-            })
+            const results = (await batch.execute()) as [number, any][]
+            const data = results.map(
+              ([blockNumber, result]) =>
+                [blockNumber, callResultToArray(result)] as GetterResult,
+            )
+            minHeap.push(...data)
+            while (minHeap.peek()?.[0] == lastEmittedBlock + 1) {
+              console.log(minHeap.pop())
+              lastEmittedBlock++
+            }
           }),
         ),
       )
     }
 
-    const batchesData: any[] = await Promise.all(batchPromises)
-    const data = flatten(batchesData)
-    console.log(data)
+    await Promise.all(batchPromises)
   }
 }
