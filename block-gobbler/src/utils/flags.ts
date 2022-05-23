@@ -5,11 +5,15 @@ export const contractFlags = {
   address: Flags.string({char: 'a', required: true}),
 }
 
-export const rpcFlags = {
-  batchSize: Flags.integer({char: 'b', default: 100}),
-  concurrency: Flags.integer({char: 'c', default: 100}),
+export const intervalFlags = {
   startBlock: Flags.integer({char: 's', default: 0}),
-  confirmations: Flags.integer({char: 's', default: 12}),
+  endBlock: Flags.integer({char: 'e'}),
+}
+
+export const rpcFlags = {
+  batchSize: Flags.integer({char: 'b', default: 10}),
+  concurrency: Flags.integer({default: 100}),
+  confirmations: Flags.integer({default: 12}),
   rpc: Flags.string({char: 'r', required: true}),
 }
 
