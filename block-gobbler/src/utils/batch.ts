@@ -15,7 +15,7 @@ export class AsyncBatchRequest {
       this.batch.add(
         request.call(null, ...params, (err: any, data: any) => {
           if (err) return reject(err)
-          resolve(data)
+          resolve([...params, data])
         }),
       )
     })
