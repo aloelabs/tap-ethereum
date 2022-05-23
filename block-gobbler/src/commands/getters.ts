@@ -27,7 +27,6 @@ export default class Getters extends Command {
     const contract = new web3.eth.Contract(abiJson, flags.address)
 
     const endBlock = flags.endBlock ?? (await web3.eth.getBlockNumber())
-    // const endBlock = flags.startBlock + 1000
 
     const blockNumberBatches = range(
       flags.startBlock,
@@ -44,34 +43,38 @@ export default class Getters extends Command {
 
     const batchPromises: Promise<unknown>[] = []
 
+    // TODO: figure out multicall
+
     for (const getterName of flags.getter) {
       batchPromises.push(
         ...blockNumberBatches.map(blockNumbers =>
-          concurrencyLimit(() => {
+          concurrencyLimit(async () => {
             const batch = new AsyncBatchRequest(web3)
             for (const block of blockNumbers) {
               batch.add(contract.methods[getterName]().call.request, block)
             }
 
-            return batch.execute()
+            const batchData = (await batch.execute()) as [number, any][]
+            // TODO: put on priority queue and print out earlier
+            return batchData.map(([blockNumber, result]) => {
+              if (typeof result === 'object') {
+                const resultArray = []
+                for (let i = 0; i.toString() in result; i++) {
+                  resultArray[i] = result[i.toString()]
+                }
+
+                result = resultArray
+              }
+
+              return [blockNumber, result]
+            })
           }),
         ),
       )
     }
 
-    const batchesData = await Promise.all(batchPromises)
+    const batchesData: any[] = await Promise.all(batchPromises)
     const data = flatten(batchesData)
     console.log(data)
-
-    // console.log(batches, null, 4)
-
-    // const batch = new AsyncBatchRequest(web3)
-    // batch.add(contract.methods.getInventory().call.request, flags.startBlock)
-    // batch.add(
-    //   contract.methods.getInventory().call.request,
-    //   flags.startBlock + 10_000,
-    // )
-    // const data = await batch.execute()
-    // console.log(data)
   }
 }
