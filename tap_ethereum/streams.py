@@ -1,6 +1,8 @@
 """Stream type classes for tap-ethereum."""
 
 from asyncio import events
+from audioop import add
+import json
 from pathlib import Path
 from re import L
 from tracemalloc import start
@@ -16,6 +18,8 @@ from web3.eth import Contract
 from tap_ethereum.typing import AddressType
 from datetime import datetime
 
+import subprocess
+
 # TODO: how to deal with uncles?
 
 # TODO: download this from somewhere?
@@ -24,72 +28,29 @@ from datetime import datetime
 # commonality is that it processes every block
 
 
-class BlocksStream(EthereumStream):
-    name = "blocks"
-
-    confirmations: int = None
-
-    replication_key = "number"
-
-    STATE_MSG_FREQUENCY = 1
-
-    start_block: int
-
-    schema = th.PropertiesList(
-        th.Property("timestamp", th.DateTimeType, required=True),
-        th.Property("number", th.IntegerType, required=True),
-    ).to_dict()
-
-    def __init__(self, *args, **kwargs):
-        self.confirmations = kwargs.pop("confirmations")
-        self.start_block = kwargs.pop("start_block")
-        super().__init__(*args, **kwargs)
-
-    def process_block(self, block_number: int, context: Optional[dict] = None) -> Optional[dict]:
-        block = self.web3.eth.get_block(block_number)
-        return dict(
-            timestamp=datetime.fromtimestamp(block["timestamp"]),
-            number=block["number"]
-        )
-
-    def get_records(self, context: Optional[dict]) -> Iterable[dict]:
-        """Return a generator of row-type dictionary objects.
-
-        The optional `context` argument is used to identify a specific slice of the
-        stream if partitioning is required for the stream. Most implementations do not
-        require partitioning and should ignore the `context` argument.
-        """
-        # TODO: Write logic to extract data from the upstream source.
-        # rows = mysource.getall()
-        # for row in rows:
-        #     yield row.to_dict()
-        # raise NotImplementedError("The method is not yet implemented (TODO)")
-        start_block_number = self.get_starting_replication_key_value(
-            context) or self.start_block
-        current_block_number = start_block_number + 1
-        latest_block_number = self.web3.eth.get_block_number()
-
-        while current_block_number < latest_block_number - self.confirmations:
-            yield self.process_block(current_block_number, context=context)
-            current_block_number += 1
-            if current_block_number == latest_block_number - self.confirmations:
-                latest_block_number = self.web3.eth.get_block_number()
-
-
-class GetterStream(BlocksStream):
-    contracts: Dict[str, Contract] = dict()
+class GetterStream(EthereumStream):
     contract_name: str = None
 
     output_labels: List[str] = []
 
+    abi: dict
+
+    STATE_MSG_FREQUENCY = 10
+
+    replication_key = "block_number"
+
+    address_to_start_block: Dict[str, int] = {}
+
     def __init__(self, *args, **kwargs):
-        self.abi = kwargs.pop("abi")
-        contracts: List[Contract] = kwargs.pop("contracts")
-        for contract in contracts:
-            self.contracts[contract.address] = contract
         self.contract_name = kwargs.pop("contract_name")
+
+        self.abi = kwargs.pop("abi")
         for index, output_abi in enumerate(self.abi.get('outputs')):
             self.output_labels.append(output_abi.get('name') or index)
+
+        for instance in kwargs.pop("instances"):
+            self.address_to_start_block[instance["address"]] = instance["start_block"]
+
         super().__init__(*args, **kwargs)
 
     @property
@@ -101,28 +62,43 @@ class GetterStream(BlocksStream):
         # namespace table somehow
         return f"{self.contract_name}_getters_{self.getter_name}"
 
-    def process_block(self, block_number: int, context: Optional[dict] = None) -> Optional[dict]:
-        contract = self.contracts[context.get('address')]
-        outputs = contract.functions[self.getter_name]().call(
-            block_identifier=block_number)
-        outputs = [outputs] if not isinstance(outputs, list) else outputs
-        return dict(
-            address=context.get('address'),
-            number=block_number,
-            outputs={label: value for (label, value) in zip(
-                self.output_labels, outputs)}
-        )
+    def get_records(self, context: Optional[dict]) -> Iterable[dict]:
+
+        address = context.get('address')
+        start_block = self.address_to_start_block[address]
+
+        cmd = ['./block-gobbler/bin/dev', 'getters',
+               '--rpc', self.config.get("ethereum_rpc"),
+               '--abi', json.dumps([self.abi]),
+               '--address', address,
+               '--getter', self.getter_name,
+               '--startBlock', str(start_block),
+               '--endBlock', str(start_block + 1000),
+               '--confirmations', str(self.config.get('confirmations')),
+               '--batchSize', str(self.config.get('batch_size')),
+               '--concurrency', str(self.config.get('concurrency'))]
+
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
+        for line in iter(proc.stdout.readline, ""):
+            block_number, outputs = json.loads(line.strip())
+            row = dict(
+                address=context.get('address'),
+                block_number=block_number,
+                outputs={label: value for (label, value) in zip(
+                    self.output_labels, outputs)}
+            )
+            yield row
 
     @property
     def partitions(self) -> List[dict]:
-        return [{"address": address} for address in self.contracts.keys()]
+        return [{"address": address} for address in self.address_to_start_block.keys()]
 
     @property
     def schema(self) -> dict:
         properties: List[th.Property] = []
 
         properties.append(th.Property('address', AddressType, required=True))
-        properties.append(th.Property('number', th.IntegerType, required=True))
+        properties.append(th.Property('block_number', th.IntegerType, required=True))
 
         outputs_properties: List[th.Property] = []
         for index, output_abi in enumerate(self.abi.get('outputs')):
@@ -139,41 +115,3 @@ def get_jsonschema_type(abi_type: str) -> th.JSONTypeHelper:
         return AddressType
     else:
         return th.StringType
-
-
-class EventStream(EthereumStream):
-    name = "events"
-
-    abi: ABIEvent = None
-    contract_name: str = None
-
-    def __init__(self, *args, **kwargs):
-        self.abi = kwargs.pop("abi")
-        self.contract_name = kwargs.pop("contract_name")
-        super().__init__(*args, **kwargs)
-
-    @property
-    def name(self) -> str:
-        # namespace table somehow
-        return f"{self.contract_name}_events_{self.abi.get('name')}"
-
-    @property
-    def schema(self) -> dict:
-        properties: List[th.Property] = []
-
-        properties.append(th.Property('address', AddressType, required=True))
-
-        inputs_properties: List[th.Property] = []
-        for index, input_abi in enumerate(self.abi.get('inputs')):
-            input_name = input_abi.get('name') or index
-            inputs_properties.append(th.Property(input_name, get_jsonschema_type(
-                input_abi.get('type')), required=True))
-        inputs_type = th.ObjectType(*inputs_properties)
-
-        # # TODO: clean up code
-        properties.append(th.Property('inputs', inputs_type, required=True))
-
-        return th.PropertiesList(*properties).to_dict()
-
-    def get_records(self, context: Optional[dict]) -> Iterable[dict]:
-        pass

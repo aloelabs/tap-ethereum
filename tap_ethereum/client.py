@@ -21,11 +21,7 @@ import os
 class EthereumStream(Stream):
     """Stream class for Ethereum streams."""
 
-    web3: Web3
-
     def __init__(self, *args, **kwargs) -> None:
-        self.web3 = kwargs.pop("web3")
-
         super().__init__(*args, **kwargs)
 
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:

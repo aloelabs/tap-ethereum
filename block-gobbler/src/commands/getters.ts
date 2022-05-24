@@ -37,11 +37,14 @@ export default class Getters extends Command {
 
     const web3 = new Web3(flags.rpc)
 
-    const abiJson = JSON.parse(fs.readFileSync(flags.abi, 'utf-8'))
+    const abi = JSON.parse(
+      flags.abiFile ? fs.readFileSync(flags.abiFile, 'utf-8') : flags.abi!,
+    )
 
-    const contract = new web3.eth.Contract(abiJson, flags.address)
+    const contract = new web3.eth.Contract(abi, flags.address)
 
-    const endBlock = flags.endBlock ?? (await web3.eth.getBlockNumber())
+    const endBlock =
+      flags.endBlock ?? (await web3.eth.getBlockNumber()) - flags.confirmations
 
     const blockNumberBatches = getBlockNumberBatches(
       flags.startBlock,
@@ -75,7 +78,8 @@ export default class Getters extends Command {
             )
             minHeap.push(...data)
             while (minHeap.peek()?.[0] == lastEmittedBlock + 1) {
-              console.log(minHeap.pop())
+              // TODO: should it emit the full record or not?
+              console.log(JSON.stringify(minHeap.pop()))
               lastEmittedBlock++
             }
           }),

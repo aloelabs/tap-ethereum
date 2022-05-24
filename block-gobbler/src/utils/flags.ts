@@ -1,7 +1,8 @@
 import {Flags} from '@oclif/core'
 
 export const contractFlags = {
-  abi: Flags.string({required: true}), // TODO: make optional and use Etherscan as backup
+  abiFile: Flags.string({exactlyOne: ['abiFile', 'abi']}), // TODO: make optional and use Etherscan as backup
+  abi: Flags.string({}), // TODO: make optional and use Etherscan as backup
   address: Flags.string({char: 'a', required: true}),
 }
 
