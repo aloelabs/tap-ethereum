@@ -1,5 +1,8 @@
 import {Command, Flags} from '@oclif/core'
-import { contractFlags, rpcFlags } from '../utils/flags'
+import {contractFlags, rpcFlags} from '../utils/flags'
+
+// TODO: make events work
+// Start naive with a single call
 
 export default class Events extends Command {
   static description = 'describe the command here'
@@ -7,7 +10,7 @@ export default class Events extends Command {
   static flags = {
     ...rpcFlags,
     ...contractFlags,
-    event: Flags.string({ char: 'e', multiple: true, required: true })
+    event: Flags.string({char: 'e', multiple: true, required: true}),
   }
 
   static args = [{name: 'file'}]

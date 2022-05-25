@@ -9,8 +9,8 @@
                     "start_block": 14170520
                 }
             ],
-            "getters": [
-                "getInventory"
+            "events": [
+                "Rebalance"
             ],
             "abi": "./examples/aloe-blend/abi.json"
         }

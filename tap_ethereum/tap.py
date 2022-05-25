@@ -14,12 +14,10 @@ from singer_sdk import Tap, Stream
 from singer_sdk import typing as th  # JSON schema typing helpers
 # TODO: Import your custom stream types here:
 from tap_ethereum.streams import (
+    EventsStream,
     GetterStream,
 )
 from tap_ethereum.typing import AddressType
-
-
-# Just events to start
 
 
 class TapEthereum(Tap):
@@ -121,21 +119,37 @@ class TapEthereum(Tap):
         abi = json.loads(abi_json)
         return abi
 
+    def _find_getter_abi_by_name(self, getter_name: str, abi: dict) -> dict:
+        return next((description for description in abi if description.get("type")
+                     == "function" and description.get("name") == getter_name), None)
+
+    def _find_event_abi_by_name(self, event_name: str, abi: dict) -> dict:
+        return next((description for description in abi if description.get("type")
+                     == "event" and description.get("name") == event_name), None)
+
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
 
         streams: List[Stream] = []
 
-        for contract_config in self.config.get('contracts'):
+        for contract_config in self.config.get('contracts', []):
             abi = self.load_abi(contract_config)
 
-            for getter_name in contract_config.get('getters'):
-                getter_abi = list(
-                    filter(lambda o: o.get("name") == getter_name, abi))[0]
+            for getter_name in contract_config.get('getters', []):
+                getter_abi = self._find_getter_abi_by_name(getter_name, abi)
                 streams.append(GetterStream(
                     tap=self,
                     abi=getter_abi,
-                    instances=contract_config.get('instances'),
+                    contract_instances=contract_config.get('instances'),
+                    contract_name=contract_config.get('name'),
+                ))
+
+            for event_name in contract_config.get('events', []):
+                event_abi = self._find_event_abi_by_name(event_name, abi)
+                streams.append(EventsStream(
+                    tap=self,
+                    abi=event_abi,
+                    contract_instances=contract_config.get('instances'),
                     contract_name=contract_config.get('name'),
                 ))
 

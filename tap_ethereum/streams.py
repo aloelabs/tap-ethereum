@@ -11,7 +11,6 @@ from pendulum import datetime
 
 from singer_sdk import Stream, typing as th  # JSON Schema typing helpers
 
-from tap_ethereum.client import EthereumStream
 from web3.types import ABIEvent
 from web3.eth import Contract
 
@@ -28,9 +27,24 @@ import subprocess
 # commonality is that it processes every block
 
 
-class GetterStream(EthereumStream):
-    contract_name: str = None
+class ContractStream(Stream):
+    contract_name: str
+    address_to_start_block: Dict[str, int] = {}
 
+    def __init__(self, *args, **kwargs):
+        self.contract_name = kwargs.pop("contract_name")
+
+        for instance in kwargs.pop("contract_instances"):
+            self.address_to_start_block[instance["address"]] = instance["start_block"]
+
+        super().__init__(*args, **kwargs)
+
+    @property
+    def partitions(self) -> List[dict]:
+        return [{"address": address} for address in self.address_to_start_block.keys()]
+
+
+class GetterStream(ContractStream):
     output_labels: List[str] = []
 
     abi: dict
@@ -39,17 +53,10 @@ class GetterStream(EthereumStream):
 
     replication_key = "block_number"
 
-    address_to_start_block: Dict[str, int] = {}
-
     def __init__(self, *args, **kwargs):
-        self.contract_name = kwargs.pop("contract_name")
-
         self.abi = kwargs.pop("abi")
         for index, output_abi in enumerate(self.abi.get('outputs')):
             self.output_labels.append(output_abi.get('name') or index)
-
-        for instance in kwargs.pop("instances"):
-            self.address_to_start_block[instance["address"]] = instance["start_block"]
 
         super().__init__(*args, **kwargs)
 
@@ -59,13 +66,12 @@ class GetterStream(EthereumStream):
 
     @property
     def name(self) -> str:
-        # namespace table somehow
         return f"{self.contract_name}_getters_{self.getter_name}"
 
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
-
         address = context.get('address')
-        start_block = self.address_to_start_block[address]
+        start_block = max(self.get_starting_replication_key_value(
+            context) or 0, self.address_to_start_block[address])
 
         cmd = ['./block-gobbler/bin/dev', 'getters',
                '--rpc', self.config.get("ethereum_rpc"),
@@ -73,7 +79,7 @@ class GetterStream(EthereumStream):
                '--address', address,
                '--getter', self.getter_name,
                '--startBlock', str(start_block),
-               '--endBlock', str(start_block + 1000),
+               #    '--endBlock', str(start_block + 1000),
                '--confirmations', str(self.config.get('confirmations')),
                '--batchSize', str(self.config.get('batch_size')),
                '--concurrency', str(self.config.get('concurrency'))]
@@ -90,10 +96,6 @@ class GetterStream(EthereumStream):
             yield row
 
     @property
-    def partitions(self) -> List[dict]:
-        return [{"address": address} for address in self.address_to_start_block.keys()]
-
-    @property
     def schema(self) -> dict:
         properties: List[th.Property] = []
 
@@ -102,10 +104,51 @@ class GetterStream(EthereumStream):
 
         outputs_properties: List[th.Property] = []
         for index, output_abi in enumerate(self.abi.get('outputs')):
-            properties.append(th.Property(self.output_labels[index], get_jsonschema_type(
+            outputs_properties.append(th.Property(self.output_labels[index], get_jsonschema_type(
                 output_abi.get('type')), required=True))
         outputs_type = th.ObjectType(*outputs_properties)
         properties.append(th.Property('outputs', outputs_type, required=True))
+
+        return th.PropertiesList(*properties).to_dict()
+
+
+class EventsStream(ContractStream):
+    abi: dict
+
+    STATE_MSG_FREQUENCY = 10
+
+    replication_key = "block_number"
+
+    def __init__(self, *args, **kwargs):
+        self.abi = kwargs.pop("abi")
+
+        super().__init__(*args, **kwargs)
+
+    @property
+    def event_name(self) -> str:
+        return self.abi.get('name')
+
+    @property
+    def name(self) -> str:
+        return f"{self.contract_name}_events_{self.event_name}"
+
+    def get_records(self, context: Optional[dict]) -> Iterable[dict]:
+        return {}
+
+    @property
+    def schema(self) -> dict:
+        properties: List[th.Property] = []
+
+        properties.append(th.Property('address', AddressType, required=True))
+        properties.append(th.Property('block_number', th.IntegerType, required=True))
+
+        # TODO: do we keep nesting or not?
+        inputs_properties: List[th.Property] = []
+        for input_abi in self.abi.get('inputs'):
+            inputs_properties.append(th.Property(input_abi.get("name"), get_jsonschema_type(
+                input_abi.get('type')), required=True))
+        inputs_type = th.ObjectType(*inputs_properties)
+        properties.append(th.Property('inputs', inputs_type, required=True))
 
         return th.PropertiesList(*properties).to_dict()
 
