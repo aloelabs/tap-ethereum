@@ -29,7 +29,7 @@ export default class Getters extends Command {
     ...intervalFlags,
     ...rpcFlags,
     ...contractFlags,
-    batchSize: Flags.integer({char: 'b', default: 10}),
+    batchSize: Flags.integer({default: 10}),
     concurrency: Flags.integer({default: 100}),
     getter: Flags.string({char: 'g', required: true}), // multicall
   }
@@ -78,6 +78,7 @@ export default class Getters extends Command {
               [blockNumber, callResultToArray(result)] as GetterResult,
           )
           minHeap.push(...data)
+          // only keep batches in promises
           while (minHeap.peek()?.[0] == lastEmittedBlock + 1) {
             // TODO: should it emit the full record or not?
             console.log(JSON.stringify(minHeap.pop()))
