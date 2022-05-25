@@ -29,7 +29,9 @@ export default class Getters extends Command {
     ...intervalFlags,
     ...rpcFlags,
     ...contractFlags,
-    getter: Flags.string({char: 'g', required: true, multiple: true}), // multicall
+    batchSize: Flags.integer({char: 'b', default: 10}),
+    concurrency: Flags.integer({default: 100}),
+    getter: Flags.string({char: 'g', required: true}), // multicall
   }
 
   public async run(): Promise<void> {
@@ -62,30 +64,28 @@ export default class Getters extends Command {
 
     let lastEmittedBlock = flags.startBlock - 1
 
-    for (const getterName of flags.getter) {
-      batchPromises.push(
-        ...blockNumberBatches.map(blockNumbers =>
-          concurrencyLimit(async () => {
-            const batch = new AsyncBatchRequest(web3)
-            for (const block of blockNumbers) {
-              batch.add(contract.methods[getterName]().call.request, block)
-            }
+    batchPromises.push(
+      ...blockNumberBatches.map(blockNumbers =>
+        concurrencyLimit(async () => {
+          const batch = new AsyncBatchRequest(web3)
+          for (const block of blockNumbers) {
+            batch.add(contract.methods[flags.getter]().call.request, block)
+          }
 
-            const results = (await batch.execute()) as [number, any][]
-            const data = results.map(
-              ([blockNumber, result]) =>
-                [blockNumber, callResultToArray(result)] as GetterResult,
-            )
-            minHeap.push(...data)
-            while (minHeap.peek()?.[0] == lastEmittedBlock + 1) {
-              // TODO: should it emit the full record or not?
-              console.log(JSON.stringify(minHeap.pop()))
-              lastEmittedBlock++
-            }
-          }),
-        ),
-      )
-    }
+          const results = (await batch.execute()) as [number, any][]
+          const data = results.map(
+            ([blockNumber, result]) =>
+              [blockNumber, callResultToArray(result)] as GetterResult,
+          )
+          minHeap.push(...data)
+          while (minHeap.peek()?.[0] == lastEmittedBlock + 1) {
+            // TODO: should it emit the full record or not?
+            console.log(JSON.stringify(minHeap.pop()))
+            lastEmittedBlock++
+          }
+        }),
+      ),
+    )
 
     await Promise.all(batchPromises)
   }
