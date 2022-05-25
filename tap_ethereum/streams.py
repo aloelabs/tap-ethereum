@@ -119,8 +119,14 @@ class EventsStream(ContractStream):
 
     replication_key = "block_number"
 
+    input_labels: List[str] = []
+
     def __init__(self, *args, **kwargs):
         self.abi = kwargs.pop("abi")
+
+        for index, input_abi in enumerate(self.abi.get('inputs')):
+            # TODO: figure out if name is required on events
+            self.input_labels.append(input_abi.get('name'))
 
         super().__init__(*args, **kwargs)
 
@@ -133,7 +139,30 @@ class EventsStream(ContractStream):
         return f"{self.contract_name}_events_{self.event_name}"
 
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
-        return {}
+        address = context.get('address')
+        start_block = max(self.get_starting_replication_key_value(
+            context) or 0, self.address_to_start_block[address])
+
+        cmd = ['./block-gobbler/bin/dev', 'events',
+               '--rpc', self.config.get("ethereum_rpc"),
+               '--abi', json.dumps([self.abi]),
+               '--address', address,
+               '--event', self.event_name,
+               '--startBlock', str(start_block),
+               #    '--endBlock', str(start_block + 1000),
+               '--confirmations', str(self.config.get('confirmations')),
+               '--concurrency', str(self.config.get('concurrency'))]
+
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
+        for line in iter(proc.stdout.readline, ""):
+            event_data = json.loads(line.strip())
+            row = dict(
+                address=context.get('address'),
+                block_number=event_data.get('blockNumber'),
+                inputs={label: event_data["returnValues"][label]
+                        for label in self.input_labels}
+            )
+            yield row
 
     @property
     def schema(self) -> dict:
