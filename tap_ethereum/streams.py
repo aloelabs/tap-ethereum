@@ -3,7 +3,8 @@
 import json
 from typing import Dict, Optional, List, Iterable
 
-from singer_sdk import Stream, typing as th  # JSON Schema typing helpers
+from singer_sdk import Stream, typing as th
+from sqlalchemy import desc  # JSON Schema typing helpers
 
 from tap_ethereum.typing import AddressType
 
@@ -44,6 +45,8 @@ class GetterStream(ContractStream):
     STATE_MSG_FREQUENCY = 10
 
     replication_key = "block_number"
+
+    primary_keys = ["block_number", "log_index"]
 
     def __init__(self, *args, **kwargs):
         self.abi = kwargs.pop("abi")
@@ -93,6 +96,8 @@ class GetterStream(ContractStream):
 
         properties.append(th.Property('address', AddressType, required=True))
         properties.append(th.Property('block_number', th.IntegerType, required=True))
+        properties.append(th.Property('log_index', th.IntegerType, required=True,
+                          description="Integer of the event index position in the block"))
 
         outputs_properties: List[th.Property] = []
         for index, output_abi in enumerate(self.abi.get('outputs')):
@@ -112,6 +117,8 @@ class EventsStream(ContractStream):
     replication_key = "block_number"
 
     input_labels: List[str] = []
+
+    primary_keys = [""]
 
     def __init__(self, *args, **kwargs):
         self.abi = kwargs.pop("abi")
@@ -151,7 +158,8 @@ class EventsStream(ContractStream):
                 address=context.get('address'),
                 block_number=event_data.get('blockNumber'),
                 inputs={label: event_data["returnValues"][label]
-                        for label in self.input_labels}
+                        for label in self.input_labels},
+                log_index=event_data.get("logIndex")
             )
             yield row
 
