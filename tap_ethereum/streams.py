@@ -19,6 +19,8 @@ import subprocess
 # pull out process block
 # commonality is that it processes every block
 
+# TODO: unbundle inputs and stuff
+
 
 class ContractStream(Stream):
     contract_name: str
@@ -38,23 +40,22 @@ class ContractStream(Stream):
 
 
 class GetterStream(ContractStream):
-    output_labels: List[str]
-
     abi: dict
 
-    STATE_MSG_FREQUENCY = 10
+    STATE_MSG_FREQUENCY = 100
 
     replication_key = "block_number"
 
-    primary_keys = ["block_number", "log_index"]
+    primary_keys = ["address", "block_number"]
 
     def __init__(self, *args, **kwargs):
         self.abi = kwargs.pop("abi")
-        self.output_labels = []
-        for index, output_abi in enumerate(self.abi.get('outputs')):
-            self.output_labels.append(output_abi.get('name') or index)
 
         super().__init__(*args, **kwargs)
+
+    @property
+    def output_labels(self) -> List[str]:
+        return [output.get('name', index) for index, output in enumerate(self.abi.get('outputs'))]
 
     @property
     def getter_name(self) -> str:
@@ -96,8 +97,6 @@ class GetterStream(ContractStream):
 
         properties.append(th.Property('address', AddressType, required=True))
         properties.append(th.Property('block_number', th.IntegerType, required=True))
-        properties.append(th.Property('log_index', th.IntegerType, required=True,
-                          description="Integer of the event index position in the block"))
 
         outputs_properties: List[th.Property] = []
         for index, output_abi in enumerate(self.abi.get('outputs')):
@@ -112,28 +111,29 @@ class GetterStream(ContractStream):
 class EventsStream(ContractStream):
     abi: dict
 
-    STATE_MSG_FREQUENCY = 10
+    STATE_MSG_FREQUENCY = 100
 
     replication_key = "block_number"
 
-    input_labels: List[str] = []
+    input_labels: List[str]
 
-    primary_keys = [""]
+    primary_keys = ["block_number", "log_index"]
 
     def __init__(self, *args, **kwargs):
         self.abi = kwargs.pop("abi")
 
+        self.input_labels = []
         for index, input_abi in enumerate(self.abi.get('inputs')):
             # TODO: figure out if name is required on events
             self.input_labels.append(input_abi.get('name'))
 
         super().__init__(*args, **kwargs)
 
-    @property
+    @ property
     def event_name(self) -> str:
         return self.abi.get('name')
 
-    @property
+    @ property
     def name(self) -> str:
         return f"{self.contract_name}_events_{self.event_name}"
 
@@ -163,12 +163,14 @@ class EventsStream(ContractStream):
             )
             yield row
 
-    @property
+    @ property
     def schema(self) -> dict:
         properties: List[th.Property] = []
 
         properties.append(th.Property('address', AddressType, required=True))
         properties.append(th.Property('block_number', th.IntegerType, required=True))
+        properties.append(th.Property('log_index', th.IntegerType, required=True,
+                                      description="Integer of the event index position in the block"))
 
         # TODO: do we keep nesting or not?
         inputs_properties: List[th.Property] = []
