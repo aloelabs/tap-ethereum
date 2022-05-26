@@ -73,7 +73,7 @@ class GetterStream(ContractStream):
         start_block = max(self.get_starting_replication_key_value(
             context) or 0, self.address_to_start_block[address])
 
-        cmd = ['./block-gobbler/bin/dev', 'getters',
+        cmd = ['block-gobbler', 'getters',
                '--rpc', self.config.get("ethereum_rpc"),
                '--abi', json.dumps([self.abi]),
                '--address', address,
@@ -143,7 +143,7 @@ class EventsStream(ContractStream):
         start_block = max(self.get_starting_replication_key_value(
             context) or 0, self.address_to_start_block[address])
 
-        cmd = ['./block-gobbler/bin/dev', 'events',
+        cmd = ['block-gobbler', 'events',
                '--rpc', self.config.get("ethereum_rpc"),
                '--abi', json.dumps([self.abi]),
                '--address', address,
