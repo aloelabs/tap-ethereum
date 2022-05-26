@@ -16,11 +16,11 @@ oclif example Hello World CLI
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g block-gobbler
+$ npm install -g @superkeyio/block-gobbler
 $ block-gobbler COMMAND
 running command...
 $ block-gobbler (--version)
-block-gobbler/0.0.0 darwin-x64 node-v16.15.0
+@superkeyio/block-gobbler/0.0.0 darwin-x64 node-v16.15.0
 $ block-gobbler --help [COMMAND]
 USAGE
   $ block-gobbler COMMAND
@@ -29,8 +29,9 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`block-gobbler hello PERSON`](#block-gobbler-hello-person)
-* [`block-gobbler hello world`](#block-gobbler-hello-world)
+* [`block-gobbler blocks`](#block-gobbler-blocks)
+* [`block-gobbler events [FILE]`](#block-gobbler-events-file)
+* [`block-gobbler getters`](#block-gobbler-getters)
 * [`block-gobbler help [COMMAND]`](#block-gobbler-help-command)
 * [`block-gobbler plugins`](#block-gobbler-plugins)
 * [`block-gobbler plugins:install PLUGIN...`](#block-gobbler-pluginsinstall-plugin)
@@ -42,45 +43,77 @@ USAGE
 * [`block-gobbler plugins:uninstall PLUGIN...`](#block-gobbler-pluginsuninstall-plugin-2)
 * [`block-gobbler plugins update`](#block-gobbler-plugins-update)
 
-## `block-gobbler hello PERSON`
+## `block-gobbler blocks`
 
-Say hello
+describe the command here
 
 ```
 USAGE
-  $ block-gobbler hello [PERSON] -f <value>
-
-ARGUMENTS
-  PERSON  Person to say hello to
+  $ block-gobbler blocks --rpc <value>
 
 FLAGS
-  -f, --from=<value>  (required) Whom is saying hello
+  --rpc=<value>  (required)
 
 DESCRIPTION
-  Say hello
-
-EXAMPLES
-  $ oex hello friend --from oclif
-  hello friend from oclif! (./src/commands/hello/index.ts)
+  describe the command here
 ```
 
-_See code: [dist/commands/hello/index.ts](https://github.com/mattevenson/hello-world/blob/v0.0.0/dist/commands/hello/index.ts)_
+_See code: [dist/commands/blocks.ts](https://github.com/superkeyio/tap-ethereum/blob/v0.0.0/dist/commands/blocks.ts)_
 
-## `block-gobbler hello world`
+## `block-gobbler events [FILE]`
 
-Say hello world
+describe the command here
 
 ```
 USAGE
-  $ block-gobbler hello world
+  $ block-gobbler events [FILE] --rpc <value> --address <value> --event <value> [--startBlock <value>]
+    [--endBlock <value>] [--confirmations <value>] [--abiFile <value>] [--abi <value>] [--maxBlockRange <value>]
+    [--concurrency <value>]
+
+FLAGS
+  --abi=<value>
+  --abiFile=<value>
+  --address=<value>        (required)
+  --concurrency=<value>    [default: 100]
+  --confirmations=<value>  [default: 12]
+  --endBlock=<value>
+  --event=<value>          (required)
+  --maxBlockRange=<value>  [default: 10000] Max block range supported by RPC node's eth_getLogs
+  --rpc=<value>            (required)
+  --startBlock=<value>
 
 DESCRIPTION
-  Say hello world
-
-EXAMPLES
-  $ oex hello world
-  hello world! (./src/commands/hello/world.ts)
+  describe the command here
 ```
+
+_See code: [dist/commands/events.ts](https://github.com/superkeyio/tap-ethereum/blob/v0.0.0/dist/commands/events.ts)_
+
+## `block-gobbler getters`
+
+describe the command here
+
+```
+USAGE
+  $ block-gobbler getters --rpc <value> --address <value> -g <value> [--startBlock <value>] [--endBlock
+    <value>] [--confirmations <value>] [--abiFile <value>] [--abi <value>] [--batchSize <value>] [--concurrency <value>]
+
+FLAGS
+  -g, --getter=<value>     (required)
+  --abi=<value>
+  --abiFile=<value>
+  --address=<value>        (required)
+  --batchSize=<value>      [default: 10]
+  --concurrency=<value>    [default: 100]
+  --confirmations=<value>  [default: 12]
+  --endBlock=<value>
+  --rpc=<value>            (required)
+  --startBlock=<value>
+
+DESCRIPTION
+  describe the command here
+```
+
+_See code: [dist/commands/getters.ts](https://github.com/superkeyio/tap-ethereum/blob/v0.0.0/dist/commands/getters.ts)_
 
 ## `block-gobbler help [COMMAND]`
 

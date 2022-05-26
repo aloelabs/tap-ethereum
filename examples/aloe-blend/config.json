@@ -10,7 +10,7 @@
                 }
             ],
             "events": [
-                "Rebalance"
+                "Transfer"
             ],
             "abi": "./examples/aloe-blend/abi.json"
         }

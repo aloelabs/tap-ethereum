@@ -1,5 +1,5 @@
 {
-  "name": "block-gobbler",
+  "name": "@superkeyio/block-gobbler",
   "version": "0.0.0",
   "description": "oclif example Hello World CLI",
   "author": "Matt Evenson @mattevenson",
@@ -9,7 +9,7 @@
   "homepage": "https://github.com/mattevenson/hello-world",
   "license": "MIT",
   "main": "dist/index.js",
-  "repository": "mattevenson/hello-world",
+  "repository": "git://github.com/superkeyio/tap-ethereum.git",
   "files": [
     "/bin",
     "/dist",
