@@ -17,6 +17,7 @@ etherscan-python = "^2.1.0"
 jupyter = "^1.0.0"
 python-dotenv = "^0.20.0"
 web3 = "^5.29.1"
+stringcase = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

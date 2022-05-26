@@ -1,5 +1,6 @@
 """Ethereum tap class."""
 
+from copy import deepcopy
 from sqlalchemy import desc
 import web3
 from web3.eth import Contract
@@ -113,8 +114,8 @@ class TapEthereum(Tap):
             with open(contract_config.get('abi'), 'r') as abi_file:
                 abi_json = abi_file.read()
         else:
-            self.logger.error("Missing ABI file and contract address.")
-            exit(1)
+            abi_json = self.etherscan.get_contract_abi(
+                address=contract_config.get("instances")[0]["address"])
 
         abi = json.loads(abi_json)
         return abi

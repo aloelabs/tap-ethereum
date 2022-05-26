@@ -1,21 +1,13 @@
 """Stream type classes for tap-ethereum."""
 
-from asyncio import events
-from audioop import add
 import json
-from pathlib import Path
-from re import L
-from tracemalloc import start
-from typing import Any, Dict, Optional, Union, List, Iterable
-from pendulum import datetime
+from typing import Dict, Optional, List, Iterable
 
 from singer_sdk import Stream, typing as th  # JSON Schema typing helpers
 
-from web3.types import ABIEvent
-from web3.eth import Contract
-
 from tap_ethereum.typing import AddressType
-from datetime import datetime
+
+from stringcase import spinalcase
 
 import subprocess
 
@@ -32,7 +24,7 @@ class ContractStream(Stream):
     address_to_start_block: Dict[str, int] = {}
 
     def __init__(self, *args, **kwargs):
-        self.contract_name = kwargs.pop("contract_name")
+        self.contract_name = spinalcase(kwargs.pop("contract_name"))
 
         for instance in kwargs.pop("contract_instances"):
             self.address_to_start_block[instance["address"]] = instance["start_block"]
@@ -45,7 +37,7 @@ class ContractStream(Stream):
 
 
 class GetterStream(ContractStream):
-    output_labels: List[str] = []
+    output_labels: List[str]
 
     abi: dict
 
@@ -55,6 +47,7 @@ class GetterStream(ContractStream):
 
     def __init__(self, *args, **kwargs):
         self.abi = kwargs.pop("abi")
+        self.output_labels = []
         for index, output_abi in enumerate(self.abi.get('outputs')):
             self.output_labels.append(output_abi.get('name') or index)
 
@@ -79,7 +72,6 @@ class GetterStream(ContractStream):
                '--address', address,
                '--getter', self.getter_name,
                '--startBlock', str(start_block),
-               #    '--endBlock', str(start_block + 1000),
                '--confirmations', str(self.config.get('confirmations')),
                '--batchSize', str(self.config.get('batch_size')),
                '--concurrency', str(self.config.get('concurrency'))]
@@ -149,7 +141,6 @@ class EventsStream(ContractStream):
                '--address', address,
                '--event', self.event_name,
                '--startBlock', str(start_block),
-               #    '--endBlock', str(start_block + 1000),
                '--confirmations', str(self.config.get('confirmations')),
                '--concurrency', str(self.config.get('concurrency'))]
 
