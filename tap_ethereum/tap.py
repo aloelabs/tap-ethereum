@@ -103,8 +103,6 @@ class TapEthereum(Tap):
             th.IntegerType,
             default=50
         ),
-        th.Property("stream_maps", th.ObjectType()),
-        th.Property("stream_map_config", th.ObjectType())
     ).to_dict()
 
     @property
