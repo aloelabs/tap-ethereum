@@ -4,20 +4,12 @@ import json
 from typing import Dict, Optional, List, Iterable
 
 from singer_sdk import Stream, typing as th
-from sqlalchemy import desc  # JSON Schema typing helpers
 
 from tap_ethereum.typing import AddressType
 
 from stringcase import spinalcase
 
 import subprocess
-
-# TODO: how to deal with uncles?
-
-# TODO: download this from somewhere?
-
-# pull out process block
-# commonality is that it processes every block
 
 # TODO: unbundle inputs and stuff
 
@@ -58,6 +50,10 @@ class GetterStream(ContractStream):
         return [output.get('name', index) for index, output in enumerate(self.abi.get('outputs'))]
 
     @property
+    def flattened_output_labels(self) -> List[str]:
+        return [f"outputs__{label}" for label in self.output_labels]
+
+    @property
     def getter_name(self) -> str:
         return self.abi.get('name')
 
@@ -86,8 +82,8 @@ class GetterStream(ContractStream):
             row = dict(
                 address=context.get('address'),
                 block_number=block_number,
-                outputs={label: value for (label, value) in zip(
-                    self.output_labels, outputs)}
+                **{label: value for (label, value) in zip(
+                    self.flattened_output_labels, outputs)}
             )
             yield row
 
@@ -98,12 +94,9 @@ class GetterStream(ContractStream):
         properties.append(th.Property('address', AddressType, required=True))
         properties.append(th.Property('block_number', th.IntegerType, required=True))
 
-        outputs_properties: List[th.Property] = []
         for index, output_abi in enumerate(self.abi.get('outputs')):
-            outputs_properties.append(th.Property(self.output_labels[index], get_jsonschema_type(
+            properties.append(th.Property(self.flattened_output_labels[index], get_jsonschema_type(
                 output_abi.get('type')), required=True))
-        outputs_type = th.ObjectType(*outputs_properties)
-        properties.append(th.Property('outputs', outputs_type, required=True))
 
         return th.PropertiesList(*properties).to_dict()
 
@@ -115,14 +108,11 @@ class EventsStream(ContractStream):
 
     replication_key = "block_number"
 
-    input_labels: List[str]
-
     primary_keys = ["block_number", "log_index"]
 
     def __init__(self, *args, **kwargs):
         self.abi = kwargs.pop("abi")
 
-        self.input_labels = []
         for index, input_abi in enumerate(self.abi.get('inputs')):
             # TODO: figure out if name is required on events
             self.input_labels.append(input_abi.get('name'))
@@ -136,6 +126,14 @@ class EventsStream(ContractStream):
     @ property
     def name(self) -> str:
         return f"{self.contract_name}_events_{self.event_name}"
+
+    @property
+    def input_labels(self) -> List[str]:
+        return [input_.get('name') for input_ in self.abi.get('inputs')]
+
+    @property
+    def flattened_input_labels(self) -> List[str]:
+        return [f"inputs__{label}" for label in self.input_labels]
 
     def get_records(self, context: Optional[dict]) -> Iterable[dict]:
         address = context.get('address')
@@ -157,8 +155,8 @@ class EventsStream(ContractStream):
             row = dict(
                 address=context.get('address'),
                 block_number=event_data.get('blockNumber'),
-                inputs={label: event_data["returnValues"][label]
-                        for label in self.input_labels},
+                **{flattened_label: event_data["returnValues"][label]
+                   for label, flattened_label in zip(self.input_labels, self.flattened_input_labels)},
                 log_index=event_data.get("logIndex")
             )
             yield row
@@ -172,13 +170,9 @@ class EventsStream(ContractStream):
         properties.append(th.Property('log_index', th.IntegerType, required=True,
                                       description="Integer of the event index position in the block"))
 
-        # TODO: do we keep nesting or not?
-        inputs_properties: List[th.Property] = []
-        for input_abi in self.abi.get('inputs'):
-            inputs_properties.append(th.Property(input_abi.get("name"), get_jsonschema_type(
+        for index, input_abi in enumerate(self.abi.get('inputs')):
+            properties.append(th.Property(self.flattened_input_labels[index], get_jsonschema_type(
                 input_abi.get('type')), required=True))
-        inputs_type = th.ObjectType(*inputs_properties)
-        properties.append(th.Property('inputs', inputs_type, required=True))
 
         return th.PropertiesList(*properties).to_dict()
 
