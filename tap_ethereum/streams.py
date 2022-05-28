@@ -113,10 +113,6 @@ class EventsStream(ContractStream):
     def __init__(self, *args, **kwargs):
         self.abi = kwargs.pop("abi")
 
-        for index, input_abi in enumerate(self.abi.get('inputs')):
-            # TODO: figure out if name is required on events
-            self.input_labels.append(input_abi.get('name'))
-
         super().__init__(*args, **kwargs)
 
     @ property
