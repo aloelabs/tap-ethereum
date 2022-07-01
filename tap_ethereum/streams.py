@@ -1,9 +1,13 @@
 """Stream type classes for tap-ethereum."""
 
+from asyncio.log import logger
+from functools import cached_property
 import json
+from syslog import LOG_ALERT
 from typing import Dict, Optional, List, Iterable
 
 from singer_sdk import Stream, typing as th
+from web3 import Web3
 
 from tap_ethereum.typing import AddressType
 
@@ -16,10 +20,14 @@ import subprocess
 
 class ContractStream(Stream):
     contract_name: str
-    address_to_start_block: Dict[str, int] = {}
+
+    @cached_property
+    def web3(self) -> Web3:
+        return Web3(Web3.HTTPProvider(self.config.get("ethereum_rpc")))
 
     def __init__(self, *args, **kwargs):
         self.contract_name = spinalcase(kwargs.pop("contract_name"))
+        self.address_to_start_block = {}
 
         for instance in kwargs.pop("contract_instances"):
             self.address_to_start_block[instance["address"]] = instance["start_block"]
@@ -104,7 +112,7 @@ class GetterStream(ContractStream):
 class EventsStream(ContractStream):
     abi: dict
 
-    STATE_MSG_FREQUENCY = 100
+    STATE_MSG_FREQUENCY = 1
 
     replication_key = "block_number"
 
@@ -136,12 +144,15 @@ class EventsStream(ContractStream):
         start_block = max(self.get_starting_replication_key_value(
             context) or 0, self.address_to_start_block[address])
 
+        end_block = self.web3.eth.get_block_number()
+
         cmd = ['block-gobbler', 'events',
                '--rpc', self.config.get("ethereum_rpc"),
                '--abi', json.dumps([self.abi]),
                '--address', address,
                '--event', self.event_name,
                '--startBlock', str(start_block),
+               '--endBlock', str(end_block),
                '--confirmations', str(self.config.get('confirmations')),
                '--concurrency', str(self.config.get('concurrency'))]
 
@@ -156,6 +167,9 @@ class EventsStream(ContractStream):
                 log_index=event_data.get("logIndex")
             )
             yield row
+
+        self._increment_stream_state({"block_number": end_block}, context=context)
+        self._write_state_message()
 
     @ property
     def schema(self) -> dict:

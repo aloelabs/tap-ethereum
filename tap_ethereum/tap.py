@@ -1,6 +1,7 @@
 """Ethereum tap class."""
 
 from copy import deepcopy
+from functools import cached_property
 from sqlalchemy import desc
 import web3
 from web3.eth import Contract
