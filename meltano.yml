@@ -15,11 +15,15 @@ plugins:
     - name: contracts
     - name: etherscan_api_key
     - name: confirmations
-    - name: batch_size
-    - name: concurrency
+    - name: max_attempts
+    - name: max_timeout
+    - name: base_backoff_interval
+    - name: rps
     config:
-      concurrency: 50
-      batch_size: 100
+      max_attempts: 3
+      max_timeout: 10000
+      base_backoff_interval: 500
+      rps: 100
       confirmations: 12
       contracts:
       - name: AloeBlend

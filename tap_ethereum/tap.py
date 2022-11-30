@@ -95,14 +95,24 @@ class TapEthereum(Tap):
             default=12,
         ),
         th.Property(
-            "batch_size",
+            "max_attempts",
             th.IntegerType,
-            default=50
+            default=3
         ),
         th.Property(
-            "concurrency",
+            "max_timeout",
             th.IntegerType,
-            default=50
+            default=10000
+        ),
+        th.Property(
+            "base_backoff_interval",
+            th.IntegerType,
+            default=500
+        ),
+        th.Property(
+            "rps",
+            th.IntegerType,
+            default=100
         ),
     ).to_dict()
 

@@ -80,9 +80,11 @@ class GetterStream(ContractStream):
                '--address', address,
                '--getter', self.getter_name,
                '--startBlock', str(start_block),
-               '--confirmations', str(self.config.get('confirmations')),
-               '--batchSize', str(self.config.get('batch_size')),
-               '--concurrency', str(self.config.get('concurrency'))]
+               '--maxAttempts', str(self.config.get('max_attempts')),
+               '--maxTimeout', str(self.config.get('max_timeout')),
+               '--baseBackoffInterval', str(self.config.get('base_backoff_interval')),
+               '--requestsPerSecond', str(self.config.get('rps')),
+               '--confirmations', str(self.config.get('confirmations'))]
 
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
         for line in iter(proc.stdout.readline, ""):
